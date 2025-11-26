@@ -7,6 +7,8 @@ import androidx.navigation.compose.NavHost
 import dev.bltucker.lazypizza.cart.cartScreen
 import dev.bltucker.lazypizza.home.HOME_SCREEN_ROUTE
 import dev.bltucker.lazypizza.home.homeScreen
+import dev.bltucker.lazypizza.productdetails.navigateToProductDetails
+import dev.bltucker.lazypizza.productdetails.productDetailsScreen
 
 @Composable
 fun AppNavigationGraph(
@@ -18,8 +20,19 @@ fun AppNavigationGraph(
         startDestination = HOME_SCREEN_ROUTE,
         modifier = modifier
     ) {
-        homeScreen()
+        homeScreen(
+            onNavigateToProductDetails = { productId ->
+                navController.navigateToProductDetails(productId)
+            }
+        )
 
+        productDetailsScreen(
+            onNavigateBack = {
+              navController.popBackStack()
+            }
+        )
+        
+        
         cartScreen(
             onNavigateToMenu = {
                 navController.popBackStack()

@@ -66,10 +66,11 @@ private data class ScreenActions(
     val onAddToCart: (String) -> Unit,
     val onIncreaseQuantity: (String) -> Unit,
     val onDecreaseQuantity: (String) -> Unit,
-    val onRemoveFromCart: (String) -> Unit
+    val onRemoveFromCart: (String) -> Unit,
+    val onItemClick: (String) -> Unit
 )
 
-fun NavGraphBuilder.homeScreen() {
+fun NavGraphBuilder.homeScreen(onNavigateToProductDetails: (String) -> Unit) {
     composable(route = HOME_SCREEN_ROUTE) {
         val viewModel = hiltViewModel<HomeScreenViewModel>()
         val model = viewModel.observableModel.collectAsStateWithLifecycle()
@@ -81,7 +82,8 @@ fun NavGraphBuilder.homeScreen() {
                 onAddToCart = viewModel::onAddToCart,
                 onIncreaseQuantity = viewModel::onIncreaseQuantity,
                 onDecreaseQuantity = viewModel::onDecreaseQuantity,
-                onRemoveFromCart = viewModel::onRemoveFromCart
+                onRemoveFromCart = viewModel::onRemoveFromCart,
+                onItemClick = onNavigateToProductDetails
             )
         }
 
@@ -153,6 +155,7 @@ private fun HomeScreen(
                 MenuItem(
                     item = item,
                     quantity = model.getQuantity(item.id),
+                    onItemClick = { screenActions.onItemClick(item.id) },
                     onAddToCart = { screenActions.onAddToCart(item.id) },
                     onIncreaseQuantity = { screenActions.onIncreaseQuantity(item.id) },
                     onDecreaseQuantity = { screenActions.onDecreaseQuantity(item.id) },
@@ -323,6 +326,7 @@ private fun CategoryTabs(
 private fun MenuItem(
     item: MenuItemDto,
     quantity: Int,
+    onItemClick: () -> Unit,
     onAddToCart: () -> Unit,
     onIncreaseQuantity: () -> Unit,
     onDecreaseQuantity: () -> Unit,
@@ -330,7 +334,9 @@ private fun MenuItem(
     modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onItemClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -486,7 +492,8 @@ private fun HomeScreenPreview() {
         onAddToCart = {},
         onIncreaseQuantity = {},
         onDecreaseQuantity = {},
-        onRemoveFromCart = {}
+        onRemoveFromCart = {},
+        onItemClick = {}
     )
 
     LazyPizzaTheme {
