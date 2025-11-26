@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import dev.bltucker.lazypizza.cart.cartScreen
 import dev.bltucker.lazypizza.home.HOME_SCREEN_ROUTE
 import dev.bltucker.lazypizza.home.homeScreen
 import dev.bltucker.lazypizza.productdetails.navigateToProductDetails
@@ -27,6 +28,13 @@ fun AppNavigationGraph(
 
         productDetailsScreen(
             onNavigateBack = {
+              navController.popBackStack()
+            }
+        )
+        
+        
+        cartScreen(
+            onNavigateToMenu = {
                 navController.popBackStack()
             }
         )
