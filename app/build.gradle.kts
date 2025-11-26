@@ -6,9 +6,7 @@ plugins {
 
 android {
     namespace = "dev.bltucker.lazypizza"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "dev.bltucker.lazypizza"
@@ -39,6 +37,10 @@ android {
     buildFeatures {
         compose = true
     }
+}
+
+kotlin {
+    jvmToolchain(21)
 }
 
 dependencies {
