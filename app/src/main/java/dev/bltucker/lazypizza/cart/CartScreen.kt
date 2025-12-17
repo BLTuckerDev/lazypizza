@@ -55,6 +55,8 @@ import dev.bltucker.lazypizza.common.theme.LightGrey
 import dev.bltucker.lazypizza.home.MenuCategory
 import dev.bltucker.lazypizza.home.MenuItemDto
 
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+
 const val CART_SCREEN_ROUTE = "cart"
 
 fun NavController.navigateToCart() {
@@ -62,6 +64,7 @@ fun NavController.navigateToCart() {
 }
 
 fun NavGraphBuilder.cartScreen(
+    windowSizeClass: WindowWidthSizeClass,
     onNavigateToMenu: () -> Unit
 ) {
     composable(route = CART_SCREEN_ROUTE) {
@@ -76,6 +79,7 @@ fun NavGraphBuilder.cartScreen(
         CartScreen(
             modifier = Modifier.fillMaxSize(),
             model = model,
+            windowSizeClass = windowSizeClass,
             onNavigateToMenu = onNavigateToMenu,
             onIncrementQuantity = viewModel::onIncrementQuantity,
             onDecrementQuantity = viewModel::onDecrementQuantity,
@@ -91,6 +95,7 @@ fun NavGraphBuilder.cartScreen(
 private fun CartScreen(
     modifier: Modifier = Modifier,
     model: CartScreenModel,
+    windowSizeClass: WindowWidthSizeClass,
     onNavigateToMenu: () -> Unit,
     onIncrementQuantity: (String) -> Unit,
     onDecrementQuantity: (String) -> Unit,
@@ -129,11 +134,175 @@ private fun CartScreen(
                     .fillMaxSize()
                     .padding(paddingValues),
                 model = model,
+                isWideScreen = windowSizeClass >= WindowWidthSizeClass.Expanded,
                 onIncrementQuantity = onIncrementQuantity,
                 onDecrementQuantity = onDecrementQuantity,
                 onRemoveItem = onRemoveItem,
                 onAddRecommendedItem = onAddRecommendedItem,
                 onProceedToCheckout = onProceedToCheckout
+            )
+        }
+    }
+}
+
+@Composable
+private fun CartContent(
+    modifier: Modifier = Modifier,
+    model: CartScreenModel,
+    isWideScreen: Boolean,
+    onIncrementQuantity: (String) -> Unit,
+    onDecrementQuantity: (String) -> Unit,
+    onRemoveItem: (String) -> Unit,
+    onAddRecommendedItem: (String) -> Unit,
+    onProceedToCheckout: () -> Unit
+) {
+    if (isWideScreen) {
+        Row(
+            modifier = modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Left Column: Cart Items
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+                    .background(Color.White)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(
+                    items = model.cartItems,
+                    key = { it.menuItem.id }
+                ) { cartItem ->
+                    CartItemCard(
+                        imageUrl = cartItem.menuItem.imageUrl,
+                        name = cartItem.menuItem.name,
+                        quantity = cartItem.quantity,
+                        unitPrice = model.formatPrice(cartItem.menuItem.price),
+                        totalPrice = model.formatPrice(cartItem.totalPrice),
+                        onIncrementClick = { onIncrementQuantity(cartItem.menuItem.id) },
+                        onDecrementClick = { onDecrementQuantity(cartItem.menuItem.id) },
+                        onDeleteClick = { onRemoveItem(cartItem.menuItem.id) }
+                    )
+                }
+            }
+
+            // Right Column: Recommendations + Checkout
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Recommendations
+                if (model.recommendedItems.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White, RoundedCornerShape(16.dp))
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "RECOMMENDED",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Grey,
+                            fontWeight = FontWeight.Medium
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(
+                                items = model.recommendedItems,
+                                key = { it.id }
+                            ) { menuItem ->
+                                RecommendedItemCard(
+                                    menuItem = menuItem,
+                                    onAddClick = { onAddRecommendedItem(menuItem.id) }
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Checkout
+                CheckoutSection(
+                    totalPrice = model.getFormattedTotalPrice(),
+                    onProceedToCheckout = onProceedToCheckout,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color.White, RoundedCornerShape(16.dp))
+                        .padding(16.dp)
+                )
+            }
+        }
+    } else {
+        // Mobile Layout (Original)
+        Column(
+            modifier = modifier
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(Color.White),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(
+                    items = model.cartItems,
+                    key = { it.menuItem.id }
+                ) { cartItem ->
+                    CartItemCard(
+                        imageUrl = cartItem.menuItem.imageUrl,
+                        name = cartItem.menuItem.name,
+                        quantity = cartItem.quantity,
+                        unitPrice = model.formatPrice(cartItem.menuItem.price),
+                        totalPrice = model.formatPrice(cartItem.totalPrice),
+                        onIncrementClick = { onIncrementQuantity(cartItem.menuItem.id) },
+                        onDecrementClick = { onDecrementQuantity(cartItem.menuItem.id) },
+                        onDeleteClick = { onRemoveItem(cartItem.menuItem.id) }
+                    )
+                }
+
+                if (model.recommendedItems.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "RECOMMENDED TO ADD TO YOUR ORDER",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Grey,
+                            fontWeight = FontWeight.Medium,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                    }
+
+                    item {
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = PaddingValues(vertical = 8.dp)
+                        ) {
+                            items(
+                                items = model.recommendedItems,
+                                key = { it.id }
+                            ) { menuItem ->
+                                RecommendedItemCard(
+                                    menuItem = menuItem,
+                                    onAddClick = { onAddRecommendedItem(menuItem.id) }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            CheckoutSection(
+                totalPrice = model.getFormattedTotalPrice(),
+                onProceedToCheckout = onProceedToCheckout,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
+                    .padding(16.dp)
             )
         }
     }
@@ -356,6 +525,7 @@ private fun EmptyCartScreenPreview() {
                 cartItems = emptyList(),
                 isLoading = false
             ),
+            windowSizeClass = WindowWidthSizeClass.Compact,
             onNavigateToMenu = {},
             onIncrementQuantity = {},
             onDecrementQuantity = {},
@@ -372,6 +542,7 @@ private fun CartScreenWithItemsPreview() {
     LazyPizzaTheme {
         val cartItems = listOf(
             CartItem(
+                id = "1",
                 menuItem = MenuItemDto(
                     id = "1",
                     name = "Margherita",
@@ -383,6 +554,7 @@ private fun CartScreenWithItemsPreview() {
                 quantity = 2
             ),
             CartItem(
+                id = "13",
                 menuItem = MenuItemDto(
                     id = "13",
                     name = "Pepsi",
@@ -394,6 +566,7 @@ private fun CartScreenWithItemsPreview() {
                 quantity = 2
             ),
             CartItem(
+                id = "24",
                 menuItem = MenuItemDto(
                     id = "24",
                     name = "Cookies Ice Cream",
@@ -431,6 +604,7 @@ private fun CartScreenWithItemsPreview() {
                 recommendedItems = recommendedItems,
                 isLoading = false
             ),
+            windowSizeClass = WindowWidthSizeClass.Compact,
             onNavigateToMenu = {},
             onIncrementQuantity = {},
             onDecrementQuantity = {},

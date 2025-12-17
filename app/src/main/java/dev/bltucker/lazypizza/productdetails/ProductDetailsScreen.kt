@@ -97,7 +97,10 @@ fun NavGraphBuilder.productDetailsScreen(onNavigateBack: () -> Unit) {
                 onToppingClick = viewModel::onToppingClick,
                 onIncrementTopping = viewModel::onIncrementTopping,
                 onDecrementTopping = viewModel::onDecrementTopping,
-                onAddToCart = onNavigateBack
+                onAddToCart = {
+                    viewModel.onAddToCart()
+                    onNavigateBack()
+                }
             )
         }
 

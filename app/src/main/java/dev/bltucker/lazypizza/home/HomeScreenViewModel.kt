@@ -10,9 +10,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import dev.bltucker.lazypizza.cart.CartRepository
+
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
     private val repository: HomeRepository,
+    private val cartRepository: CartRepository,
     private val modelReducer: HomeScreenModelReducer
 ) : ViewModel() {
 
@@ -29,6 +32,7 @@ class HomeScreenViewModel @Inject constructor(
         hasStarted = true
 
         loadMenuItems()
+        observeCart()
     }
 
     private fun loadMenuItems() {
@@ -41,6 +45,31 @@ class HomeScreenViewModel @Inject constructor(
             } catch (e: Exception) {
                 mutableModel.update {
                     modelReducer.updateWithError(it)
+                }
+            }
+        }
+    }
+
+    private fun observeCart() {
+        viewModelScope.launch {
+            cartRepository.cartItems.collect { cartItems ->
+                // Map cart items back to product ID quantities
+                // For Home Screen, we aggregate all quantities for a product ID?
+                // Or just show quantity for the "base" item?
+                // UX: Usually shows total quantity of that product (including variants) or just base.
+                // Given the specific "add" button behavior, it's safer to show specific base item quantity
+                // OR aggregate. Let's aggregate for now to show user they have *some* of this pizza.
+                // Requirement 38: "Tapping changes it to a quantity selector...".
+                // If I have 1 Pepperoni (base) and 1 Pepperoni (Extra Cheese), showing "2" on Home Screen might be confusing if +/- only affects base.
+                // Let's assume Home Screen only interacts with BASE items (no toppings).
+                // So we only count items where ID matches product ID exactly (meaning no toppings suffix).
+                
+                val quantities = cartItems.values
+                    .filter { it.toppings.isEmpty() }
+                    .associate { it.menuItem.id to it.quantity }
+
+                mutableModel.update {
+                    modelReducer.updateCartQuantities(it, quantities)
                 }
             }
         }
@@ -59,31 +88,19 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     fun onAddToCart(itemId: String) {
-        val currentQuantity = mutableModel.value.getQuantity(itemId)
-        mutableModel.update {
-            modelReducer.updateItemQuantity(it, itemId, currentQuantity + 1)
-        }
+        val item = mutableModel.value.menuItems.find { it.id == itemId } ?: return
+        cartRepository.addItem(item)
     }
 
     fun onIncreaseQuantity(itemId: String) {
-        val currentQuantity = mutableModel.value.getQuantity(itemId)
-        mutableModel.update {
-            modelReducer.updateItemQuantity(it, itemId, currentQuantity + 1)
-        }
+        cartRepository.incrementQuantity(itemId)
     }
 
     fun onDecreaseQuantity(itemId: String) {
-        val currentQuantity = mutableModel.value.getQuantity(itemId)
-        if (currentQuantity > 0) {
-            mutableModel.update {
-                modelReducer.updateItemQuantity(it, itemId, currentQuantity - 1)
-            }
-        }
+        cartRepository.decrementQuantity(itemId)
     }
 
     fun onRemoveFromCart(itemId: String) {
-        mutableModel.update {
-            modelReducer.updateItemQuantity(it, itemId, 0)
-        }
+        cartRepository.removeItem(itemId)
     }
 }

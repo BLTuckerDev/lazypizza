@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,8 +15,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -57,6 +60,7 @@ import dev.bltucker.lazypizza.R
 import dev.bltucker.lazypizza.common.theme.Grey
 import dev.bltucker.lazypizza.common.theme.LazyPizzaTheme
 import dev.bltucker.lazypizza.common.theme.LightGrey
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 
 const val HOME_SCREEN_ROUTE = "home"
 
@@ -70,7 +74,10 @@ private data class ScreenActions(
     val onItemClick: (String) -> Unit
 )
 
-fun NavGraphBuilder.homeScreen(onNavigateToProductDetails: (String) -> Unit) {
+fun NavGraphBuilder.homeScreen(
+    windowSizeClass: WindowWidthSizeClass,
+    onNavigateToProductDetails: (String) -> Unit
+) {
     composable(route = HOME_SCREEN_ROUTE) {
         val viewModel = hiltViewModel<HomeScreenViewModel>()
         val model = viewModel.observableModel.collectAsStateWithLifecycle()
@@ -95,7 +102,8 @@ fun NavGraphBuilder.homeScreen(onNavigateToProductDetails: (String) -> Unit) {
         HomeScreen(
             modifier = Modifier.fillMaxSize(),
             model = model.value,
-            screenActions = screenActions
+            screenActions = screenActions,
+            windowSizeClass = windowSizeClass
         )
     }
 }
@@ -104,21 +112,29 @@ fun NavGraphBuilder.homeScreen(onNavigateToProductDetails: (String) -> Unit) {
 private fun HomeScreen(
     modifier: Modifier = Modifier,
     model: HomeScreenModel,
-    screenActions: ScreenActions
+    screenActions: ScreenActions,
+    windowSizeClass: WindowWidthSizeClass
 ) {
+    val isWideScreen = windowSizeClass >= WindowWidthSizeClass.Expanded
+    val columns = if (isWideScreen) 2 else 1
+
     Column(
         modifier = modifier.background(LightGrey)
     ) {
         TopBar()
 
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(columns),
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(bottom = 16.dp) // Add bottom padding
         ) {
-            item {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 HeroSection()
             }
 
-            item {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 SearchBar(
                     query = model.searchQuery,
                     onQueryChange = screenActions.onSearchQueryChanged,
@@ -126,7 +142,7 @@ private fun HomeScreen(
                 )
             }
 
-            item {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 CategoryTabs(
                     selectedCategory = model.selectedCategory,
                     onCategorySelected = screenActions.onCategorySelected,
@@ -134,11 +150,7 @@ private fun HomeScreen(
                 )
             }
 
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            item {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Text(
                     text = model.selectedCategory.name.replace("_", " "),
                     style = MaterialTheme.typography.titleMedium,
@@ -160,11 +172,11 @@ private fun HomeScreen(
                     onIncreaseQuantity = { screenActions.onIncreaseQuantity(item.id) },
                     onDecreaseQuantity = { screenActions.onDecreaseQuantity(item.id) },
                     onRemoveFromCart = { screenActions.onRemoveFromCart(item.id) },
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
             }
 
-            item {
+            item(span = { GridItemSpan(maxLineSpan) }) {
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -499,7 +511,8 @@ private fun HomeScreenPreview() {
     LazyPizzaTheme {
         HomeScreen(
             model = previewModel,
-            screenActions = screenActions
+            screenActions = screenActions,
+            windowSizeClass = WindowWidthSizeClass.Compact
         )
     }
 }

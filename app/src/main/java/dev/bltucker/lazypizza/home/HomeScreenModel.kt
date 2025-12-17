@@ -73,4 +73,11 @@ class HomeScreenModelReducer @Inject constructor() {
         }
         return previousModel.copy(cartQuantities = newQuantities)
     }
+
+    fun updateCartQuantities(
+        previousModel: HomeScreenModel,
+        quantities: Map<String, Int>
+    ): HomeScreenModel {
+        return previousModel.copy(cartQuantities = quantities)
+    }
 }

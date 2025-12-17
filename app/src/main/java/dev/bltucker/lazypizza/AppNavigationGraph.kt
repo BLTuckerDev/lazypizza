@@ -1,5 +1,6 @@
 package dev.bltucker.lazypizza
 
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -13,6 +14,7 @@ import dev.bltucker.lazypizza.productdetails.productDetailsScreen
 @Composable
 fun AppNavigationGraph(
     navController: NavHostController,
+    windowSizeClass: WindowWidthSizeClass,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -21,6 +23,7 @@ fun AppNavigationGraph(
         modifier = modifier
     ) {
         homeScreen(
+            windowSizeClass = windowSizeClass,
             onNavigateToProductDetails = { productId ->
                 navController.navigateToProductDetails(productId)
             }
@@ -34,6 +37,7 @@ fun AppNavigationGraph(
         
         
         cartScreen(
+            windowSizeClass = windowSizeClass,
             onNavigateToMenu = {
                 navController.popBackStack()
             }
