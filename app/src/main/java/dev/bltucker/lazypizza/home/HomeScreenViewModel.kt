@@ -11,10 +11,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 import dev.bltucker.lazypizza.cart.CartRepository
+import dev.bltucker.lazypizza.common.MenuRepository
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor(
-    private val repository: HomeRepository,
+    private val menuRepository: MenuRepository,
     private val cartRepository: CartRepository,
     private val modelReducer: HomeScreenModelReducer
 ) : ViewModel() {
@@ -38,7 +39,7 @@ class HomeScreenViewModel @Inject constructor(
     private fun loadMenuItems() {
         viewModelScope.launch {
             try {
-                val items = repository.getMenuItems()
+                val items = menuRepository.getAllMenuItems()
                 mutableModel.update {
                     modelReducer.updateWithMenuItems(it, items)
                 }
@@ -53,17 +54,6 @@ class HomeScreenViewModel @Inject constructor(
     private fun observeCart() {
         viewModelScope.launch {
             cartRepository.cartItems.collect { cartItems ->
-                // Map cart items back to product ID quantities
-                // For Home Screen, we aggregate all quantities for a product ID?
-                // Or just show quantity for the "base" item?
-                // UX: Usually shows total quantity of that product (including variants) or just base.
-                // Given the specific "add" button behavior, it's safer to show specific base item quantity
-                // OR aggregate. Let's aggregate for now to show user they have *some* of this pizza.
-                // Requirement 38: "Tapping changes it to a quantity selector...".
-                // If I have 1 Pepperoni (base) and 1 Pepperoni (Extra Cheese), showing "2" on Home Screen might be confusing if +/- only affects base.
-                // Let's assume Home Screen only interacts with BASE items (no toppings).
-                // So we only count items where ID matches product ID exactly (meaning no toppings suffix).
-                
                 val quantities = cartItems.values
                     .filter { it.toppings.isEmpty() }
                     .associate { it.menuItem.id to it.quantity }

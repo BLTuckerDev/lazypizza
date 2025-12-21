@@ -2,6 +2,7 @@ package dev.bltucker.lazypizza.common
 
 import dev.bltucker.lazypizza.home.MenuCategory
 import dev.bltucker.lazypizza.home.MenuItemDto
+import dev.bltucker.lazypizza.productdetails.Topping
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -260,6 +261,105 @@ class MenuRepository @Inject constructor(
 
     suspend fun getMenuItemById(itemId: String): MenuItemDto? {
         return getAllMenuItems().find { it.id == itemId }
+    }
+
+    suspend fun getAvailableToppings(): List<Topping> {
+        val toppings = listOf(
+            Topping(
+                id = "topping_1",
+                name = "Bacon",
+                price = 1.0,
+                imageUrl = null,
+                emoji = "🥓"
+            ),
+            Topping(
+                id = "topping_2",
+                name = "Extra Cheese",
+                price = 1.0,
+                imageUrl = null,
+                emoji = "🧀"
+            ),
+            Topping(
+                id = "topping_3",
+                name = "Corn",
+                price = 0.50,
+                imageUrl = null,
+                emoji = "🌽"
+            ),
+            Topping(
+                id = "topping_4",
+                name = "Tomato",
+                price = 0.50,
+                imageUrl = null,
+                emoji = "🍅"
+            ),
+            Topping(
+                id = "topping_5",
+                name = "Olives",
+                price = 0.50,
+                imageUrl = null,
+                emoji = "🫒"
+            ),
+            Topping(
+                id = "topping_6",
+                name = "Pepperoni",
+                price = 1.0,
+                imageUrl = null,
+                emoji = "🍕"
+            ),
+            Topping(
+                id = "topping_7",
+                name = "Mushrooms",
+                price = 0.50,
+                imageUrl = null,
+                emoji = "🍄"
+            ),
+            Topping(
+                id = "topping_8",
+                name = "Basil",
+                price = 0.50,
+                imageUrl = null,
+                emoji = "🌿"
+            ),
+            Topping(
+                id = "topping_9",
+                name = "Pineapple",
+                price = 1.0,
+                imageUrl = null,
+                emoji = "🍍"
+            ),
+            Topping(
+                id = "topping_10",
+                name = "Onion",
+                price = 0.50,
+                imageUrl = null,
+                emoji = "🧅"
+            ),
+            Topping(
+                id = "topping_11",
+                name = "Chili Peppers",
+                price = 0.50,
+                imageUrl = null,
+                emoji = "🌶️"
+            ),
+            Topping(
+                id = "topping_12",
+                name = "Spinach",
+                price = 0.50,
+                imageUrl = null,
+                emoji = "🥬"
+            )
+        )
+
+        return toppings.map { topping ->
+            val imageUrl = try {
+                val imageName = "${topping.name.lowercase().replace(" ", "_")}.png"
+                firebaseStorage.getToppingsImage(imageName)
+            } catch (e: Exception) {
+                null
+            }
+            topping.copy(imageUrl = imageUrl)
+        }
     }
 
     private suspend fun fetchImageUrl(category: MenuCategory, imageName: String): String {

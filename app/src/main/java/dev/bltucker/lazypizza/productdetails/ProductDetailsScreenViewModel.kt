@@ -12,10 +12,11 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 import dev.bltucker.lazypizza.cart.CartRepository
+import dev.bltucker.lazypizza.common.MenuRepository
 
 @HiltViewModel
 class ProductDetailsScreenViewModel @Inject constructor(
-    private val repository: ProductDetailsRepository,
+    private val menuRepository: MenuRepository,
     private val cartRepository: CartRepository,
     private val modelReducer: ProductDetailsScreenModelReducer,
     savedStateHandle: SavedStateHandle
@@ -41,8 +42,8 @@ class ProductDetailsScreenViewModel @Inject constructor(
     private fun loadProductDetails() {
         viewModelScope.launch {
             try {
-                val product = repository.getProductById(productId)
-                val toppings = repository.getAvailableToppings()
+                val product = menuRepository.getMenuItemById(productId)
+                val toppings = menuRepository.getAvailableToppings()
 
                 if (product != null) {
                     mutableModel.update {

@@ -4,7 +4,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.bltucker.lazypizza.home.HomeRepository
+import dev.bltucker.lazypizza.common.MenuRepository
 import dev.bltucker.lazypizza.home.MenuCategory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +15,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CartScreenViewModel @Inject constructor(
     private val cartRepository: CartRepository,
-    private val homeRepository: HomeRepository,
+    private val menuRepository: MenuRepository,
     private val modelReducer: CartScreenModelReducer
 ) : ViewModel() {
 
@@ -48,7 +48,7 @@ class CartScreenViewModel @Inject constructor(
     private fun loadRecommendedItems() {
         viewModelScope.launch {
             try {
-                val allItems = homeRepository.getMenuItems()
+                val allItems = menuRepository.getAllMenuItems()
                 val recommendedItems = allItems
                     .filter { it.category == MenuCategory.SAUCES }
                     .take(3)
