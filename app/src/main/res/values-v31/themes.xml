@@ -3,6 +3,6 @@
 
     <style name="Theme.LazyPizza" parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:windowSplashScreenBackground">@color/splash_background</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/lazy_pizza_splash_icon</item>
     </style>
 </resources>
