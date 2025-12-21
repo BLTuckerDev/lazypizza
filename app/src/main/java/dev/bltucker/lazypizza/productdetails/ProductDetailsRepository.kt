@@ -1,18 +1,23 @@
 package dev.bltucker.lazypizza.productdetails
 
+import dev.bltucker.lazypizza.common.FirebaseStorageWrapper
+import dev.bltucker.lazypizza.common.MenuRepository
 import dev.bltucker.lazypizza.home.MenuItemDto
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class ProductDetailsRepository @Inject constructor() {
+class ProductDetailsRepository @Inject constructor(
+    private val menuRepository: MenuRepository,
+    private val firebaseStorage: FirebaseStorageWrapper
+) {
 
     suspend fun getProductById(productId: String): MenuItemDto? {
-        return getAllProducts().find { it.id == productId }
+        return menuRepository.getMenuItemById(productId)
     }
 
     suspend fun getAvailableToppings(): List<Topping> {
-        return listOf(
+        val toppings = listOf(
             Topping(
                 id = "topping_1",
                 name = "Bacon",
@@ -98,90 +103,15 @@ class ProductDetailsRepository @Inject constructor() {
                 emoji = "🥬"
             )
         )
-    }
 
-    private fun getAllProducts(): List<MenuItemDto> {
-        return listOf(
-            MenuItemDto(
-                id = "1",
-                name = "Margherita",
-                description = "Tomato sauce, Mozzarella, Fresh basil, Olive oil",
-                price = 8.99,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "2",
-                name = "Pepperoni",
-                description = "Tomato sauce, mozzarella, pepperoni",
-                price = 9.99,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "3",
-                name = "Hawaiian",
-                description = "Tomato sauce, mozzarella, ham, pineapple",
-                price = 10.49,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "4",
-                name = "BBQ Chicken",
-                description = "BBQ sauce, mozzarella, grilled chicken, onion, corn",
-                price = 11.49,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "5",
-                name = "Four Cheese",
-                description = "Mozzarella, gorgonzola, parmesan, ricotta",
-                price = 11.99,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "6",
-                name = "Veggie Delight",
-                description = "Tomato sauce, mozzarella, mushrooms, olives, bell pepper, onion...",
-                price = 9.79,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "7",
-                name = "Meat Lovers",
-                description = "Tomato sauce, mozzarella, pepperoni, ham, bacon, sausage",
-                price = 12.49,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "8",
-                name = "Spicy Inferno",
-                description = "Tomato sauce, mozzarella, spicy salami, jalapeños, red chili pepper, ga...",
-                price = 11.29,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "9",
-                name = "Seafood Special",
-                description = "Tomato sauce, mozzarella, shrimp, mussels, squid, parsley",
-                price = 13.99,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            ),
-            MenuItemDto(
-                id = "10",
-                name = "Truffle Mushroom",
-                description = "Cream sauce, mozzarella, mushrooms, truffle oil, parmesan",
-                price = 12.99,
-                imageUrl = null,
-                category = dev.bltucker.lazypizza.home.MenuCategory.PIZZA
-            )
-        )
+        return toppings.map { topping ->
+            val imageUrl = try {
+                val imageName = "${topping.name.lowercase().replace(" ", "_")}.jpg"
+                firebaseStorage.getToppingsImage(imageName)
+            } catch (e: Exception) {
+                null
+            }
+            topping.copy(imageUrl = imageUrl)
+        }
     }
 }

@@ -87,6 +87,9 @@ class ProductDetailsScreenModelReducer @Inject constructor() {
         toppingId: String
     ): ProductDetailsScreenModel {
         val currentQuantity = previousModel.getToppingQuantity(toppingId)
+        if (currentQuantity >= 3) {
+            return previousModel
+        }
         return updateToppingQuantity(previousModel, toppingId, currentQuantity + 1)
     }
 

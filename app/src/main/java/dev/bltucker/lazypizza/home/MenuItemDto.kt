@@ -6,7 +6,8 @@ data class MenuItemDto(
     val description: String,
     val price: Double,
     val imageUrl: String?,
-    val category: MenuCategory
+    val category: MenuCategory,
+    val imageName: String,
 )
 
 enum class MenuCategory {

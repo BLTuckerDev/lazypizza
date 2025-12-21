@@ -38,7 +38,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import coil3.compose.AsyncImage
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -140,6 +142,7 @@ private fun ProductDetailsScreen(
                     modifier = Modifier.fillMaxWidth(),
                     productName = model.product?.name ?: "",
                     productDescription = model.product?.description ?: "",
+                    productImageUrl = model.product?.imageUrl,
                     productEmoji = "🍕",
                     onBackClick = screenActions.onBackClick
                 )
@@ -181,6 +184,7 @@ private fun ProductHeader(
     modifier: Modifier = Modifier,
     productName: String,
     productDescription: String,
+    productImageUrl: String?,
     productEmoji: String,
     onBackClick: () -> Unit
 ) {
@@ -212,11 +216,20 @@ private fun ProductHeader(
                 .aspectRatio(1f),
             contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = productEmoji,
-                fontSize = 180.sp,
-                textAlign = TextAlign.Center
-            )
+            if (productImageUrl != null) {
+                AsyncImage(
+                    model = productImageUrl,
+                    contentDescription = productName,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(
+                    text = productEmoji,
+                    fontSize = 180.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -419,7 +432,8 @@ private fun ProductDetailsScreenPreview() {
         description = "Tomato sauce, Mozzarella, Fresh basil, Olive oil",
         price = 8.99,
         imageUrl = null,
-        category = MenuCategory.PIZZA
+        category = MenuCategory.PIZZA,
+        imageName = "Margherita.png"
     )
 
     val previewToppings = listOf(

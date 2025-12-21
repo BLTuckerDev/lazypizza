@@ -549,7 +549,8 @@ private fun CartScreenWithItemsPreview() {
                     description = "Tomato sauce, mozzarella, fresh basil, olive oil",
                     price = 10.99,
                     imageUrl = null,
-                    category = MenuCategory.PIZZA
+                    category = MenuCategory.PIZZA,
+                    imageName = "Margherita.png"
                 ),
                 quantity = 2
             ),
@@ -561,7 +562,8 @@ private fun CartScreenWithItemsPreview() {
                     description = "",
                     price = 1.99,
                     imageUrl = null,
-                    category = MenuCategory.DRINKS
+                    category = MenuCategory.DRINKS,
+                    imageName = "pepsi.png"
                 ),
                 quantity = 2
             ),
@@ -573,7 +575,8 @@ private fun CartScreenWithItemsPreview() {
                     description = "",
                     price = 1.49,
                     imageUrl = null,
-                    category = MenuCategory.ICE_CREAM
+                    category = MenuCategory.ICE_CREAM,
+                    imageName = "cookies.png"
                 ),
                 quantity = 1
             )
@@ -586,7 +589,8 @@ private fun CartScreenWithItemsPreview() {
                 description = "",
                 price = 0.59,
                 imageUrl = null,
-                category = MenuCategory.SAUCES
+                category = MenuCategory.SAUCES,
+                imageName = "BBQ Sauce.png"
             ),
             MenuItemDto(
                 id = "17",
@@ -594,7 +598,8 @@ private fun CartScreenWithItemsPreview() {
                 description = "",
                 price = 0.59,
                 imageUrl = null,
-                category = MenuCategory.SAUCES
+                category = MenuCategory.SAUCES,
+                imageName = "Garlic Sauce.png"
             )
         )
 

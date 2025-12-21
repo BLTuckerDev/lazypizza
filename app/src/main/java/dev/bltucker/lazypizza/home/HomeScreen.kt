@@ -2,6 +2,7 @@ package dev.bltucker.lazypizza.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import coil3.compose.AsyncImage
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -160,20 +162,31 @@ private fun HomeScreen(
                 )
             }
 
-            items(
-                items = model.filteredItems,
-                key = { it.id }
-            ) { item ->
-                MenuItem(
-                    item = item,
-                    quantity = model.getQuantity(item.id),
-                    onItemClick = { screenActions.onItemClick(item.id) },
-                    onAddToCart = { screenActions.onAddToCart(item.id) },
-                    onIncreaseQuantity = { screenActions.onIncreaseQuantity(item.id) },
-                    onDecreaseQuantity = { screenActions.onDecreaseQuantity(item.id) },
-                    onRemoveFromCart = { screenActions.onRemoveFromCart(item.id) },
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+            if (model.filteredItems.isEmpty() && model.searchQuery.isNotBlank()) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    EmptySearchState(
+                        query = model.searchQuery,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 32.dp)
+                    )
+                }
+            } else {
+                items(
+                    items = model.filteredItems,
+                    key = { it.id }
+                ) { item ->
+                    MenuItem(
+                        item = item,
+                        quantity = model.getQuantity(item.id),
+                        onItemClick = { screenActions.onItemClick(item.id) },
+                        onAddToCart = { screenActions.onAddToCart(item.id) },
+                        onIncreaseQuantity = { screenActions.onIncreaseQuantity(item.id) },
+                        onDecreaseQuantity = { screenActions.onDecreaseQuantity(item.id) },
+                        onRemoveFromCart = { screenActions.onRemoveFromCart(item.id) },
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
             }
 
             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -237,7 +250,7 @@ private fun HeroSection(modifier: Modifier = Modifier) {
             .background(MaterialTheme.colorScheme.primary)
     ) {
         Image(
-            painter = painterResource(R.drawable.pizza_hero),
+            painter = painterResource(R.drawable.lazy_pizza_splash_icon),
             contentDescription = "Pizza Hero",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -366,15 +379,24 @@ private fun MenuItem(
                     .background(MaterialTheme.colorScheme.primaryContainer),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = when (item.category) {
-                        MenuCategory.PIZZA -> "🍕"
-                        MenuCategory.DRINKS -> "🥤"
-                        MenuCategory.SAUCES -> "🧂"
-                        MenuCategory.ICE_CREAM -> "🍨"
-                    },
-                    style = MaterialTheme.typography.headlineMedium
-                )
+                if (item.imageUrl != null) {
+                    AsyncImage(
+                        model = item.imageUrl,
+                        contentDescription = item.name,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    Text(
+                        text = when (item.category) {
+                            MenuCategory.PIZZA -> "🍕"
+                            MenuCategory.DRINKS -> "🥤"
+                            MenuCategory.SAUCES -> "🧂"
+                            MenuCategory.ICE_CREAM -> "🍨"
+                        },
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
             }
 
             Column(
@@ -433,14 +455,14 @@ private fun MenuItem(
                         IconButton(
                             onClick = if (quantity == 1) onRemoveFromCart else onDecreaseQuantity,
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(16.dp)
                                 .background(LightGrey, CircleShape)
                         ) {
                             Icon(
                                 imageVector = if (quantity == 1) Icons.Default.Close else Icons.Default.Remove,
                                 contentDescription = if (quantity == 1) "Remove" else "Decrease",
                                 tint = Grey,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(12.dp)
                             )
                         }
 
@@ -454,20 +476,57 @@ private fun MenuItem(
                         IconButton(
                             onClick = onIncreaseQuantity,
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(16.dp)
                                 .background(MaterialTheme.colorScheme.primary, CircleShape)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Add,
                                 contentDescription = "Increase",
                                 tint = Color.White,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(12.dp)
                             )
                         }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun EmptySearchState(
+    query: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "🔍",
+            style = MaterialTheme.typography.displayLarge,
+            fontSize = 64.sp
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "No results found for your query",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Try searching for \"$query\" in a different category",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Grey,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -483,7 +542,8 @@ private fun HomeScreenPreview() {
                 description = "Tomato sauce, mozzarella, fresh basil, olive oil",
                 price = 8.99,
                 imageUrl = null,
-                category = MenuCategory.PIZZA
+                category = MenuCategory.PIZZA,
+                imageName = "margherita.jpg"
             ),
             MenuItemDto(
                 id = "2",
@@ -491,7 +551,8 @@ private fun HomeScreenPreview() {
                 description = "Tomato sauce, mozzarella, pepperoni",
                 price = 9.99,
                 imageUrl = null,
-                category = MenuCategory.PIZZA
+                category = MenuCategory.PIZZA,
+                imageName = "pepperoni.jpg"
             )
         ),
         selectedCategory = MenuCategory.PIZZA,
