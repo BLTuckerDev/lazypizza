@@ -14,7 +14,7 @@ fun LoadingPlaceholder(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.background(LightGrey)
+        modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant)
     )
 }
 
@@ -22,6 +22,14 @@ fun LoadingPlaceholder(
 @Composable
 private fun LoadingPlaceholderPreview() {
     LazyPizzaTheme {
+        LoadingPlaceholder()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun LoadingPlaceholderPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
         LoadingPlaceholder()
     }
 }

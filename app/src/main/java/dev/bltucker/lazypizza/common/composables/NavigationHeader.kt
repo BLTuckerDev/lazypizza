@@ -38,7 +38,7 @@ fun NavigationHeader(
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = Color.White
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier
@@ -56,7 +56,7 @@ fun NavigationHeader(
                     Box(
                         modifier = Modifier
                             .size(48.dp)
-                            .background(LightGrey, CircleShape),
+                            .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
                         contentAlignment = Alignment.Center
                     ) {
                         IconButton(onClick = onBackClick) {
@@ -118,6 +118,22 @@ private fun NavigationHeaderPreview() {
 @Composable
 private fun NavigationHeaderWithBackButtonPreview() {
     LazyPizzaTheme {
+        NavigationHeader(showBackButton = true)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun NavigationHeaderPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
+        NavigationHeader()
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun NavigationHeaderWithBackButtonPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
         NavigationHeader(showBackButton = true)
     }
 }

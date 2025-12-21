@@ -115,11 +115,11 @@ private fun CartScreen(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = LightGrey
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         if (model.isEmpty) {
             EmptyCartContent(
@@ -166,7 +166,7 @@ private fun CartContent(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxSize()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -200,7 +200,7 @@ private fun CartContent(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(Color.White, RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                             .padding(16.dp)
                     ) {
                         Text(
@@ -232,7 +232,7 @@ private fun CartContent(
                     onProceedToCheckout = onProceedToCheckout,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.White, RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp))
                         .padding(16.dp)
                 )
             }
@@ -245,7 +245,7 @@ private fun CartContent(
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
-                    .background(Color.White),
+                    .background(MaterialTheme.colorScheme.surface),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
@@ -301,7 +301,7 @@ private fun CartContent(
                 onProceedToCheckout = onProceedToCheckout,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(16.dp)
             )
         }
@@ -314,7 +314,7 @@ private fun EmptyCartContent(
     onNavigateToMenu: () -> Unit
 ) {
     Box(
-        modifier = modifier.background(Color.White),
+        modifier = modifier.background(MaterialTheme.colorScheme.surface),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -361,7 +361,7 @@ private fun CartContent(
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .background(Color.White),
+                .background(MaterialTheme.colorScheme.surface),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -417,7 +417,7 @@ private fun CartContent(
             onProceedToCheckout = onProceedToCheckout,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp)
         )
     }
@@ -433,7 +433,7 @@ private fun RecommendedItemCard(
         modifier = modifier.size(width = 140.dp, height = 180.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = LightGrey
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
@@ -448,7 +448,7 @@ private fun RecommendedItemCard(
                 modifier = Modifier
                     .size(80.dp)
                     .clip(CircleShape)
-                    .background(Color.White),
+                    .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
@@ -540,6 +540,110 @@ private fun EmptyCartScreenPreview() {
 @Composable
 private fun CartScreenWithItemsPreview() {
     LazyPizzaTheme {
+        val cartItems = listOf(
+            CartItem(
+                id = "1",
+                menuItem = MenuItemDto(
+                    id = "1",
+                    name = "Margherita",
+                    description = "Tomato sauce, mozzarella, fresh basil, olive oil",
+                    price = 10.99,
+                    imageUrl = null,
+                    category = MenuCategory.PIZZA,
+                    imageName = "Margherita.png"
+                ),
+                quantity = 2
+            ),
+            CartItem(
+                id = "13",
+                menuItem = MenuItemDto(
+                    id = "13",
+                    name = "Pepsi",
+                    description = "",
+                    price = 1.99,
+                    imageUrl = null,
+                    category = MenuCategory.DRINKS,
+                    imageName = "pepsi.png"
+                ),
+                quantity = 2
+            ),
+            CartItem(
+                id = "24",
+                menuItem = MenuItemDto(
+                    id = "24",
+                    name = "Cookies Ice Cream",
+                    description = "",
+                    price = 1.49,
+                    imageUrl = null,
+                    category = MenuCategory.ICE_CREAM,
+                    imageName = "cookies.png"
+                ),
+                quantity = 1
+            )
+        )
+
+        val recommendedItems = listOf(
+            MenuItemDto(
+                id = "18",
+                name = "BBQ Sauce",
+                description = "",
+                price = 0.59,
+                imageUrl = null,
+                category = MenuCategory.SAUCES,
+                imageName = "BBQ Sauce.png"
+            ),
+            MenuItemDto(
+                id = "17",
+                name = "Garlic Sauce",
+                description = "",
+                price = 0.59,
+                imageUrl = null,
+                category = MenuCategory.SAUCES,
+                imageName = "Garlic Sauce.png"
+            )
+        )
+
+        CartScreen(
+            model = CartScreenModel(
+                cartItems = cartItems,
+                recommendedItems = recommendedItems,
+                isLoading = false
+            ),
+            windowSizeClass = WindowWidthSizeClass.Compact,
+            onNavigateToMenu = {},
+            onIncrementQuantity = {},
+            onDecrementQuantity = {},
+            onRemoveItem = {},
+            onAddRecommendedItem = {},
+            onProceedToCheckout = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun EmptyCartScreenPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
+        CartScreen(
+            model = CartScreenModel(
+                cartItems = emptyList(),
+                isLoading = false
+            ),
+            windowSizeClass = WindowWidthSizeClass.Compact,
+            onNavigateToMenu = {},
+            onIncrementQuantity = {},
+            onDecrementQuantity = {},
+            onRemoveItem = {},
+            onAddRecommendedItem = {},
+            onProceedToCheckout = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CartScreenWithItemsPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
         val cartItems = listOf(
             CartItem(
                 id = "1",

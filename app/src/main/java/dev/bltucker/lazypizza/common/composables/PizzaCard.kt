@@ -46,7 +46,7 @@ fun PizzaCard(
             .clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -126,6 +126,36 @@ private fun PizzaCardPreview() {
 @Composable
 private fun PizzaCardLongTextPreview() {
     LazyPizzaTheme {
+        PizzaCard(
+            imageUrl = null,
+            name = "Supreme Deluxe Pizza",
+            description = "Tomato sauce, mozzarella, pepperoni, sausage, mushrooms, bell peppers, onions, black olives, and a variety of other premium toppings",
+            price = "$14.99",
+            onClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PizzaCardPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
+        PizzaCard(
+            imageUrl = null,
+            name = "Margherita",
+            description = "Tomato sauce, mozzarella, fresh basil, olive oil",
+            price = "$8.99",
+            onClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun PizzaCardLongTextPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
         PizzaCard(
             imageUrl = null,
             name = "Supreme Deluxe Pizza",

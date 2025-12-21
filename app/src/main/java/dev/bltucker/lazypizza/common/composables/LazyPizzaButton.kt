@@ -8,6 +8,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -110,20 +111,22 @@ private fun LazyPizzaButtonFilledDisabledPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun LazyPizzaButtonOutlinedEnabledPreview() {
-    LazyPizzaTheme {
-        LazyPizzaButton(
-            text = "View Details",
-            onClick = {},
-            variant = ButtonVariant.Outlined,
-            modifier = Modifier.padding(16.dp)
-        )
+    LazyPizzaTheme() {
+        Surface(){
+            LazyPizzaButton(
+                text = "View Details",
+                onClick = {},
+                variant = ButtonVariant.Outlined,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun LazyPizzaButtonOutlinedDisabledPreview() {
-    LazyPizzaTheme {
+    LazyPizzaTheme() {
         LazyPizzaButton(
             text = "View Details",
             onClick = {},

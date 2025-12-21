@@ -126,7 +126,7 @@ private fun ProductDetailsScreen(
     screenActions: ScreenActions
 ) {
     Column(
-        modifier = modifier.background(LightGrey)
+        modifier = modifier.background(MaterialTheme.colorScheme.background)
     ) {
         Box(
             modifier = Modifier
@@ -189,7 +189,7 @@ private fun ProductHeader(
     onBackClick: () -> Unit
 ) {
     Column(
-        modifier = modifier.background(Color.White)
+        modifier = modifier.background(MaterialTheme.colorScheme.surface)
     ) {
         Box(
             modifier = Modifier.fillMaxWidth()
@@ -200,7 +200,7 @@ private fun ProductHeader(
                     .align(Alignment.TopStart)
                     .padding(8.dp)
                     .size(40.dp)
-                    .background(LightGrey, CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -305,7 +305,7 @@ private fun ToppingCardWithEmoji(
             .clickable(onClick = onCardClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(
             width = if (isSelected) 2.dp else 1.dp,
@@ -412,7 +412,7 @@ private fun AddToCartBar(
 ) {
     Box(
         modifier = modifier
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(16.dp)
     ) {
         LazyPizzaButton(
@@ -462,6 +462,52 @@ private fun ProductDetailsScreenPreview() {
     )
 
     LazyPizzaTheme {
+        ProductDetailsScreen(
+            model = previewModel,
+            screenActions = screenActions
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ProductDetailsScreenPreviewDark() {
+    val previewProduct = MenuItemDto(
+        id = "1",
+        name = "Margherita",
+        description = "Tomato sauce, Mozzarella, Fresh basil, Olive oil",
+        price = 8.99,
+        imageUrl = null,
+        category = MenuCategory.PIZZA,
+        imageName = "Margherita.png"
+    )
+
+    val previewToppings = listOf(
+        Topping("1", "Bacon", 1.0, null, "🥓"),
+        Topping("2", "Extra Cheese", 1.0, null, "🧀"),
+        Topping("3", "Corn", 0.50, null, "🌽"),
+        Topping("4", "Tomato", 0.50, null, "🍅"),
+        Topping("5", "Olives", 0.50, null, "🫒"),
+        Topping("6", "Pepperoni", 1.0, null, "🍕")
+    )
+
+    val previewModel = ProductDetailsScreenModel(
+        productId = "1",
+        isLoading = false,
+        product = previewProduct,
+        availableToppings = previewToppings,
+        selectedToppings = mapOf("2" to 1, "6" to 1)
+    )
+
+    val screenActions = ScreenActions(
+        onBackClick = {},
+        onToppingClick = {},
+        onIncrementTopping = {},
+        onDecrementTopping = {},
+        onAddToCart = {}
+    )
+
+    LazyPizzaTheme(darkTheme = true) {
         ProductDetailsScreen(
             model = previewModel,
             screenActions = screenActions

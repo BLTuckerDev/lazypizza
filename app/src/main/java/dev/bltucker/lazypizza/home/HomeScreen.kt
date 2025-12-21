@@ -121,7 +121,7 @@ private fun HomeScreen(
     val columns = if (isWideScreen) 2 else 1
 
     Column(
-        modifier = modifier.background(LightGrey)
+        modifier = modifier.background(MaterialTheme.colorScheme.background)
     ) {
         TopBar()
 
@@ -201,7 +201,7 @@ private fun TopBar(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -295,9 +295,9 @@ private fun SearchBar(
             }
         },
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            disabledContainerColor = Color.White,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent
@@ -324,7 +324,7 @@ private fun CategoryTabs(
     ScrollableTabRow(
         selectedTabIndex = categories.indexOfFirst { it.first == selectedCategory },
         modifier = modifier.fillMaxWidth(),
-        containerColor = LightGrey,
+        containerColor = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.primary,
         edgePadding = 16.dp,
         indicator = {},
@@ -363,7 +363,7 @@ private fun MenuItem(
             .fillMaxWidth()
             .clickable(onClick = onItemClick),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -456,7 +456,7 @@ private fun MenuItem(
                             onClick = if (quantity == 1) onRemoveFromCart else onDecreaseQuantity,
                             modifier = Modifier
                                 .size(16.dp)
-                                .background(LightGrey, CircleShape)
+                                .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
                         ) {
                             Icon(
                                 imageVector = if (quantity == 1) Icons.Default.Close else Icons.Default.Remove,
@@ -570,6 +570,54 @@ private fun HomeScreenPreview() {
     )
 
     LazyPizzaTheme {
+        HomeScreen(
+            model = previewModel,
+            screenActions = screenActions,
+            windowSizeClass = WindowWidthSizeClass.Compact
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun HomeScreenPreviewDark() {
+    val previewModel = HomeScreenModel(
+        isLoading = false,
+        menuItems = listOf(
+            MenuItemDto(
+                id = "1",
+                name = "Margherita",
+                description = "Tomato sauce, mozzarella, fresh basil, olive oil",
+                price = 8.99,
+                imageUrl = null,
+                category = MenuCategory.PIZZA,
+                imageName = "margherita.jpg"
+            ),
+            MenuItemDto(
+                id = "2",
+                name = "Pepperoni",
+                description = "Tomato sauce, mozzarella, pepperoni",
+                price = 9.99,
+                imageUrl = null,
+                category = MenuCategory.PIZZA,
+                imageName = "pepperoni.jpg"
+            )
+        ),
+        selectedCategory = MenuCategory.PIZZA,
+        cartQuantities = mapOf("2" to 2)
+    )
+
+    val screenActions = ScreenActions(
+        onCategorySelected = {},
+        onSearchQueryChanged = {},
+        onAddToCart = {},
+        onIncreaseQuantity = {},
+        onDecreaseQuantity = {},
+        onRemoveFromCart = {},
+        onItemClick = {}
+    )
+
+    LazyPizzaTheme(darkTheme = true) {
         HomeScreen(
             model = previewModel,
             screenActions = screenActions,

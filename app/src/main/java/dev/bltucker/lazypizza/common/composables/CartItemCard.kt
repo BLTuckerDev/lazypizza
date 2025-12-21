@@ -53,7 +53,7 @@ fun CartItemCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -214,6 +214,60 @@ private fun CartItemCardSinglePreview() {
 @Composable
 private fun CartItemCardMultiplePreview() {
     LazyPizzaTheme {
+        CartItemCard(
+            imageUrl = null,
+            name = "Hawaiian",
+            quantity = 10,
+            unitPrice = "$10.99",
+            totalPrice = "$109.90",
+            onIncrementClick = {},
+            onDecrementClick = {},
+            onDeleteClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CartItemCardPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
+        CartItemCard(
+            imageUrl = null,
+            name = "Margherita",
+            quantity = 2,
+            unitPrice = "$8.99",
+            totalPrice = "$17.98",
+            onIncrementClick = {},
+            onDecrementClick = {},
+            onDeleteClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CartItemCardSinglePreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
+        CartItemCard(
+            imageUrl = null,
+            name = "Pepperoni",
+            quantity = 1,
+            unitPrice = "$9.99",
+            totalPrice = "$9.99",
+            onIncrementClick = {},
+            onDecrementClick = {},
+            onDeleteClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun CartItemCardMultiplePreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
         CartItemCard(
             imageUrl = null,
             name = "Hawaiian",

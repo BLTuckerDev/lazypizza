@@ -55,7 +55,7 @@ fun ToppingCard(
             .clickable(onClick = onCardClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(
             width = if (isSelected) 2.dp else 1.dp,
@@ -193,6 +193,57 @@ private fun ToppingCardSelectedPreview() {
 @Composable
 private fun ToppingCardSelectedMultiplePreview() {
     LazyPizzaTheme {
+        ToppingCard(
+            imageUrl = null,
+            name = "Extra Cheese",
+            price = "$2",
+            isSelected = true,
+            quantity = 5,
+            onCardClick = {},
+            onIncrementClick = {},
+            onDecrementClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ToppingCardUnselectedPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
+        ToppingCard(
+            imageUrl = null,
+            name = "Bacon",
+            price = "$1",
+            isSelected = false,
+            onCardClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ToppingCardSelectedPreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
+        ToppingCard(
+            imageUrl = null,
+            name = "Bacon",
+            price = "$1",
+            isSelected = true,
+            quantity = 1,
+            onCardClick = {},
+            onIncrementClick = {},
+            onDecrementClick = {},
+            modifier = Modifier.padding(16.dp)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ToppingCardSelectedMultiplePreviewDark() {
+    LazyPizzaTheme(darkTheme = true) {
         ToppingCard(
             imageUrl = null,
             name = "Extra Cheese",
