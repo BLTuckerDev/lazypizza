@@ -178,11 +178,12 @@ private fun CartContent(
                         imageUrl = cartItem.menuItem.imageUrl,
                         name = cartItem.menuItem.name,
                         quantity = cartItem.quantity,
-                        unitPrice = model.formatPrice(cartItem.menuItem.price),
+                        unitPrice = model.formatPrice(cartItem.unitPrice),
                         totalPrice = model.formatPrice(cartItem.totalPrice),
-                        onIncrementClick = { onIncrementQuantity(cartItem.menuItem.id) },
-                        onDecrementClick = { onDecrementQuantity(cartItem.menuItem.id) },
-                        onDeleteClick = { onRemoveItem(cartItem.menuItem.id) }
+                        onIncrementClick = { onIncrementQuantity(cartItem.id) },
+                        onDecrementClick = { onDecrementQuantity(cartItem.id) },
+                        onDeleteClick = { onRemoveItem(cartItem.id) },
+                        toppings = cartItem.toppings
                     )
                 }
             }
@@ -257,11 +258,12 @@ private fun CartContent(
                         imageUrl = cartItem.menuItem.imageUrl,
                         name = cartItem.menuItem.name,
                         quantity = cartItem.quantity,
-                        unitPrice = model.formatPrice(cartItem.menuItem.price),
+                        unitPrice = model.formatPrice(cartItem.unitPrice),
                         totalPrice = model.formatPrice(cartItem.totalPrice),
-                        onIncrementClick = { onIncrementQuantity(cartItem.menuItem.id) },
-                        onDecrementClick = { onDecrementQuantity(cartItem.menuItem.id) },
-                        onDeleteClick = { onRemoveItem(cartItem.menuItem.id) }
+                        onIncrementClick = { onIncrementQuantity(cartItem.id) },
+                        onDecrementClick = { onDecrementQuantity(cartItem.id) },
+                        onDeleteClick = { onRemoveItem(cartItem.id) },
+                        toppings = cartItem.toppings
                     )
                 }
 

@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import dev.bltucker.lazypizza.cart.cartScreen
 import dev.bltucker.lazypizza.home.HOME_SCREEN_ROUTE
 import dev.bltucker.lazypizza.home.homeScreen
+import dev.bltucker.lazypizza.orderhistory.orderHistoryScreen
 import dev.bltucker.lazypizza.productdetails.navigateToProductDetails
 import dev.bltucker.lazypizza.productdetails.productDetailsScreen
 
@@ -34,12 +35,17 @@ fun AppNavigationGraph(
               navController.popBackStack()
             }
         )
-        
-        
+
+
         cartScreen(
             windowSizeClass = windowSizeClass,
             onNavigateToMenu = {
                 navController.popBackStack()
+            }
+        )
+
+        orderHistoryScreen(
+            onNavigateToSignIn = {
             }
         )
     }

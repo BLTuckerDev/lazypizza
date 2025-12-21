@@ -47,7 +47,8 @@ fun CartItemCard(
     onIncrementClick: () -> Unit,
     onDecrementClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    toppings: Map<String, Int> = emptyMap()
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -88,6 +89,14 @@ fun CartItemCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+
+                if (toppings.isNotEmpty()) {
+                    Text(
+                        text = toppings.entries.joinToString(", ") { "${it.key} x${it.value}" },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Grey
+                    )
+                }
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

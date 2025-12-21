@@ -28,6 +28,7 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -36,12 +37,18 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.bltucker.lazypizza.cart.CART_SCREEN_ROUTE
+import dev.bltucker.lazypizza.cart.CartRepository
 import dev.bltucker.lazypizza.cart.navigateToCart
 import dev.bltucker.lazypizza.common.theme.LazyPizzaTheme
 import dev.bltucker.lazypizza.home.HOME_SCREEN_ROUTE
+import dev.bltucker.lazypizza.orderhistory.ORDER_HISTORY_SCREEN_ROUTE
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var cartRepository: CartRepository
 
     private var navController: NavHostController? = null
 
@@ -59,7 +66,8 @@ class MainActivity : ComponentActivity() {
             LazyPizzaTheme {
                 MainScaffold(
                     navController = rememberedNavController,
-                    windowSizeClass = windowSizeClass.widthSizeClass
+                    windowSizeClass = windowSizeClass.widthSizeClass,
+                    cartRepository = cartRepository
                 )
             }
         }
@@ -75,10 +83,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScaffold(
     navController: NavHostController,
-    windowSizeClass: WindowWidthSizeClass
+    windowSizeClass: WindowWidthSizeClass,
+    cartRepository: CartRepository
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
+    val cartItemCount by cartRepository.cartItems.collectAsStateWithLifecycle()
 
     val isWideScreen = windowSizeClass >= WindowWidthSizeClass.Expanded
     // Requirements say > 840dp is wide. WindowWidthSizeClass.Expanded is usually > 840dp.
@@ -87,7 +97,7 @@ fun MainScaffold(
     val showNavigation = currentDestination?.route in listOf(
         HOME_SCREEN_ROUTE,
         CART_SCREEN_ROUTE,
-        // Add History route later
+        ORDER_HISTORY_SCREEN_ROUTE
     )
 
     Scaffold(
@@ -95,6 +105,7 @@ fun MainScaffold(
             if (windowSizeClass < WindowWidthSizeClass.Expanded) {
                 LazyPizzaNavigationBar(
                     currentDestination = currentDestination,
+                    cartItemCount = cartItemCount.values.sumOf { it.quantity },
                     onNavigate = { route ->
                         navController.navigate(route) {
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -116,6 +127,7 @@ fun MainScaffold(
             if (windowSizeClass >= WindowWidthSizeClass.Expanded) {
                 LazyPizzaNavigationRail(
                     currentDestination = currentDestination,
+                    cartItemCount = cartItemCount.values.sumOf { it.quantity },
                     onNavigate = { route ->
                         navController.navigate(route) {
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -140,6 +152,7 @@ fun MainScaffold(
 @Composable
 fun LazyPizzaNavigationBar(
     currentDestination: androidx.navigation.NavDestination?,
+    cartItemCount: Int,
     onNavigate: (String) -> Unit
 ) {
     NavigationBar {
@@ -153,17 +166,25 @@ fun LazyPizzaNavigationBar(
             selected = currentDestination?.hierarchy?.any { it.route == CART_SCREEN_ROUTE } == true,
             onClick = { onNavigate(CART_SCREEN_ROUTE) },
             icon = {
-                // TODO: Add Badge logic here
-                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
+                BadgedBox(
+                    badge = {
+                        if (cartItemCount > 0) {
+                            Badge {
+                                Text(cartItemCount.toString())
+                            }
+                        }
+                    }
+                ) {
+                    Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
+                }
             },
             label = { Text("Cart") }
         )
         NavigationBarItem(
-            selected = false, // Placeholder for History
-            onClick = { /* TODO */ },
+            selected = currentDestination?.hierarchy?.any { it.route == ORDER_HISTORY_SCREEN_ROUTE } == true,
+            onClick = { onNavigate(ORDER_HISTORY_SCREEN_ROUTE) },
             icon = { Icon(Icons.Default.History, contentDescription = "Orders") },
-            label = { Text("orders") },
-            enabled = false
+            label = { Text("Orders") }
         )
     }
 }
@@ -171,6 +192,7 @@ fun LazyPizzaNavigationBar(
 @Composable
 fun LazyPizzaNavigationRail(
     currentDestination: androidx.navigation.NavDestination?,
+    cartItemCount: Int,
     onNavigate: (String) -> Unit
 ) {
     NavigationRail {
@@ -184,17 +206,25 @@ fun LazyPizzaNavigationRail(
             selected = currentDestination?.hierarchy?.any { it.route == CART_SCREEN_ROUTE } == true,
             onClick = { onNavigate(CART_SCREEN_ROUTE) },
             icon = {
-                // TODO: Add Badge logic here
-                Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
+                BadgedBox(
+                    badge = {
+                        if (cartItemCount > 0) {
+                            Badge {
+                                Text(cartItemCount.toString())
+                            }
+                        }
+                    }
+                ) {
+                    Icon(Icons.Default.ShoppingCart, contentDescription = "Cart")
+                }
             },
             label = { Text("Cart") }
         )
         NavigationRailItem(
-            selected = false, // Placeholder
-            onClick = { /* TODO */ },
+            selected = currentDestination?.hierarchy?.any { it.route == ORDER_HISTORY_SCREEN_ROUTE } == true,
+            onClick = { onNavigate(ORDER_HISTORY_SCREEN_ROUTE) },
             icon = { Icon(Icons.Default.History, contentDescription = "Orders") },
-            label = { Text("Orders") },
-            enabled = false
+            label = { Text("Orders") }
         )
     }
 }
