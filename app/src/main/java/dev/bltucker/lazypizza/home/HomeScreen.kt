@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -61,8 +60,9 @@ import androidx.navigation.compose.composable
 import dev.bltucker.lazypizza.R
 import dev.bltucker.lazypizza.common.theme.Grey
 import dev.bltucker.lazypizza.common.theme.LazyPizzaTheme
-import dev.bltucker.lazypizza.common.theme.LightGrey
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import dev.bltucker.lazypizza.common.composables.ErrorScreen
+import dev.bltucker.lazypizza.common.composables.LoadingScreen
 
 const val HOME_SCREEN_ROUTE = "home"
 
@@ -117,6 +117,25 @@ private fun HomeScreen(
     screenActions: ScreenActions,
     windowSizeClass: WindowWidthSizeClass
 ) {
+    when {
+        model.isLoading -> LoadingScreen(modifier = modifier.fillMaxSize())
+        model.isError -> ErrorScreen(modifier = modifier.fillMaxSize())
+        else -> HomeScreenContent(
+            modifier = modifier,
+            model = model,
+            screenActions = screenActions,
+            windowSizeClass = windowSizeClass
+        )
+    }
+}
+
+@Composable
+private fun HomeScreenContent(
+    modifier: Modifier = Modifier,
+    model: HomeScreenModel,
+    screenActions: ScreenActions,
+    windowSizeClass: WindowWidthSizeClass
+) {
     val isWideScreen = windowSizeClass >= WindowWidthSizeClass.Expanded
     val columns = if (isWideScreen) 2 else 1
 
@@ -130,7 +149,7 @@ private fun HomeScreen(
             modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(bottom = 16.dp) // Add bottom padding
+            contentPadding = PaddingValues(bottom = 16.dp)
         ) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 HeroSection()
