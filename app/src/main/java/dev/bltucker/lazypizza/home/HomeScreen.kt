@@ -266,10 +266,10 @@ private fun HeroSection(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .height(160.dp)
-            .background(MaterialTheme.colorScheme.primary)
+            .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
     ) {
         Image(
-            painter = painterResource(R.drawable.lazy_pizza_splash_icon),
+            painter = painterResource(R.drawable.hero_banner),
             contentDescription = "Pizza Hero",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
